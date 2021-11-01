@@ -1,0 +1,33 @@
+.wrapper {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90px;
+  padding: 1.5rem 1rem 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 10px;
+}
+
+.content {
+  font-weight: 300;
+  font-size: 0.9rem;
+  padding-bottom: 1rem;
+}
+
+.metadata {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.author {
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: dodgerblue;
+}
+
+.createdAt {
+  font-size: 0.6rem;
+  color: gray;
+}

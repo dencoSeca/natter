@@ -1,0 +1,11 @@
+.titleWrapper {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+    font-size: 4rem;
+}
