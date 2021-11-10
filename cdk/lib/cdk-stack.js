@@ -216,13 +216,6 @@ class CdkStack extends cdk.Stack {
         scores.addMethod('GET', rdsLambdaIntegration)
         scores.addMethod('POST', rdsLambdaIntegration)
 
-        const boundary = iam.ManagedPolicy.fromManagedPolicyArn(
-            this,
-            'Boundary',
-            `arn:aws:iam::${process.env.AWS_ACCOUNT}:policy/ScopePermissions`
-        )
-        iam.PermissionsBoundary.of(this).apply(boundary)
-
         new cdk.CfnOutput(this, 'API_URL', {
             value: api.url ?? 'NO_URL',
         })
