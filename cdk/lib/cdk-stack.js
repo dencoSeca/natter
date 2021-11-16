@@ -12,6 +12,10 @@ const apigw = require('@aws-cdk/aws-apigateway')
 const lambda = require('@aws-cdk/aws-lambda')
 
 class CdkStack extends cdk.Stack {
+    prefix = 'natter'
+    domainName = 'natter.co.uk'
+    dbName = 'natter-rds'
+
     /**
      *
      * @param {cdk.Construct} scope
@@ -43,7 +47,7 @@ class CdkStack extends cdk.Stack {
             `${this.prefix}-redirects-function`,
             {
                 code: cloudfront.FunctionCode.fromFile({
-                    filePath: 'functions/redirects.js',
+                    filePath: 'utils/redirects.js',
                 }),
             }
         )
@@ -71,7 +75,7 @@ class CdkStack extends cdk.Stack {
                     ],
                 },
                 defaultRootObject: 'index.html',
-                domainNames: [`${this.prefix}.${process.env.NJA_DOMAIN_NAME}`],
+                domainNames: [`${this.prefix}.${this.domainName}`],
                 certificate: cert,
             }
         )
@@ -93,7 +97,7 @@ class CdkStack extends cdk.Stack {
             this,
             `${this.prefix}-hosted-zone`,
             {
-                domainName: process.env.NJA_DOMAIN_NAME ?? '',
+                domainName: this.domainName ?? '',
             }
         )
 
@@ -103,7 +107,7 @@ class CdkStack extends cdk.Stack {
             {
                 zone,
                 domainName: clientDistribution.domainName,
-                recordName: `${this.prefix}.${process.env.NJA_DOMAIN_NAME}`,
+                recordName: `${this.prefix}.${this.domainName}`,
             }
         )
 
@@ -114,7 +118,7 @@ class CdkStack extends cdk.Stack {
             value: clientDistribution.distributionDomainName ?? 'NO_DATA',
         })
         new cdk.CfnOutput(this, 'prettyDomainName', {
-            value: `https://${this.prefix}.${process.env.NJA_DOMAIN_NAME}`,
+            value: `https://${this.prefix}.${this.domainName}`,
         })
 
         // Backend
@@ -144,7 +148,7 @@ class CdkStack extends cdk.Stack {
                 ),
                 vpc: teamVpc,
                 scaling: { autoPause: cdk.Duration.seconds(0) },
-                defaultDatabaseName: this.yourDbName,
+                defaultDatabaseName: this.dbName,
                 securityGroups: [teamSecurityGroup],
             }
         )
@@ -178,7 +182,6 @@ class CdkStack extends cdk.Stack {
             deployOptions: {
                 stageName: 'v1',
             },
-            policy: apiResourcePolicyVPN,
             cloudWatchRole: false,
         })
 
@@ -200,7 +203,7 @@ class CdkStack extends cdk.Stack {
                 handler: 'index.handler',
                 role: rdsExecutionRole,
                 environment: {
-                    DB_NAME: this.yourDbName,
+                    DB_NAME: this.dbName,
                     CLUSTER_ARN: rdsCluster.clusterArn,
                     SECRET_ARN: rdsCluster.secret.secretArn || '',
                     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
